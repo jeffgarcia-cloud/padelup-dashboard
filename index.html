@@ -307,12 +307,17 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
   .stat-value{font-size:22px}
   .stat-value input{font-size:22px}
 
+  /* Prevent horizontal overflow globally on mobile */
+  body,html{overflow-x:hidden;max-width:100vw}
+  .view{overflow-x:hidden}
+
   /* Calendar */
-  .cal-body{padding:14px 12px}
-  .cal-controls{flex-direction:column;gap:8px}
-  .cal-ctrl-right{flex-wrap:wrap;gap:5px}
-  .cal-filter,.cal-add{font-size:9px;padding:4px 10px}
-  .cal-grid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+  .cal-body{padding:12px 10px;overflow:hidden}
+  .cal-controls{flex-direction:column;gap:8px;overflow:hidden}
+  .cal-ctrl-right{flex-wrap:wrap;gap:5px;width:100%}
+  .cal-filter{font-size:9px;padding:4px 8px}
+  .cal-add{font-size:9px;padding:4px 10px;margin-left:0}
+  .cal-grid-wrap{overflow:hidden;padding-bottom:0}
   .cal-grid{min-width:unset}
   .cal-header-row{display:none}
 
