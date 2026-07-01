@@ -31,7 +31,7 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:2px}
 
-.app{display:flex;min-height:100vh}
+.app{display:flex;min-height:100vh;overflow-x:hidden;max-width:100vw}
 
 /* ── SIDEBAR ── */
 .sidebar{
@@ -78,7 +78,7 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
 .sb-stat-lbl{font-size:9px;color:var(--t3);margin-top:1px}
 
 /* ── MAIN ── */
-.main{margin-left:var(--sidebar-w);flex:1}
+.main{margin-left:var(--sidebar-w);flex:1;min-width:0;overflow-x:hidden}
 .topbar{
   height:54px;background:rgba(8,8,8,0.92);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--border);display:flex;align-items:center;
@@ -323,7 +323,7 @@ html,body{overflow-x:hidden;max-width:100vw}
   .nav-item svg{width:22px;height:22px}
 
   /* Main */
-  .main{margin-left:0;padding-bottom:68px}
+  .main{margin-left:0;padding-bottom:68px;width:100vw;max-width:100vw}
 
   /* Topbar */
   .topbar{padding:0 14px}
@@ -842,7 +842,7 @@ function renderCal() {
 
   const DAYS_SHORT = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
   const DAYS_FULL = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
-  const isMobile = window.innerWidth < 768;
+  const isMobile = window.innerWidth < 600;
 
   // Hide/show the day-of-week header row
   const headerWrap = document.querySelector('.cal-header-row');
