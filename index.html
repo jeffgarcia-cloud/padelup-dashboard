@@ -313,7 +313,8 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
   .cal-ctrl-right{flex-wrap:wrap;gap:5px}
   .cal-filter,.cal-add{font-size:9px;padding:4px 10px}
   .cal-grid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
-  .cal-grid{min-width:560px}
+  .cal-grid{min-width:unset}
+  .cal-header-row{display:none}
 
   /* Calendar header days */
   div[style*="grid-template-columns:repeat(7"]{min-width:560px;overflow:visible}
@@ -325,9 +326,10 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
   #ov-tracker-list{grid-template-columns:1fr!important}
 
   /* Todo */
-  .todo-add-row{flex-wrap:wrap}
-  #todo-new-cat{width:100%!important}
-  .todo-add-btn{width:100%}
+  .todo-add-row{flex-wrap:wrap;gap:8px}
+  .todo-add-row .todo-input{flex:1 1 100%}
+  #todo-new-cat{width:100%!important;flex:1 1 100%}
+  .todo-add-btn{width:100%;flex:1 1 100%}
 }
 
 @media (max-width: 400px) {
@@ -571,7 +573,7 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
         </div>
       </div>
 
-      <div class="cal-grid-wrap"><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:6px;min-width:560px">
+      <div class="cal-grid-wrap cal-header-row"><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:6px;min-width:560px">
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Lun</div>
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Mar</div>
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Mié</div>
@@ -802,8 +804,8 @@ function renderCal() {
           const statusDot = post.status === 'pub' ? '#22C55E' : post.status === 'prod' ? '#F59E0B' : post.status === 'rev' ? '#3B82F6' : 'var(--t3)';
           html += `<div class="cal-event ${pl.cls}" onclick="cycleStatus(${idx})" style="display:flex;align-items:center;gap:8px;font-size:11px;padding:9px 10px">
             <span style="width:7px;height:7px;border-radius:50%;background:${statusDot};flex-shrink:0"></span>
-            <span style="flex:1">${post.title}</span>
-            <span style="font-size:9px;opacity:.65;white-space:nowrap">${post.fmt}</span>
+            <span style="flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${post.title}</span>
+            <span style="font-size:9px;opacity:.65;white-space:nowrap;flex-shrink:0">${post.fmt}</span>
           </div>`;
         });
       } else if (inJul) {
