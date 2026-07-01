@@ -332,6 +332,16 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
   .todo-add-btn{width:100%;flex:1 1 100%}
 }
 
+.mobile-logo-header{display:none}
+
+@media (max-width: 768px) {
+  .mobile-logo-header{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:18px;padding-bottom:16px;
+    border-bottom:1px solid var(--border)
+  }
+}
+
 @media (max-width: 400px) {
   .g4{grid-template-columns:1fr}
 }
@@ -423,6 +433,12 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
 
   <!-- ═══ OVERVIEW ═══ -->
   <div class="view active" id="view-overview">
+
+    <!-- Logo visible solo en móvil (sidebar está oculto) -->
+    <div class="mobile-logo-header">
+      <img src="https://cdn.prod.website-files.com/6657bfd4bd5e6513709cecf5/696b0d2e0b0fbad01f9cc73b_logo-white.png" alt="Padel Up" style="height:36px;object-fit:contain" />
+      <span style="font-size:11px;color:var(--t3);font-weight:500">@padelupclub</span>
+    </div>
 
     <div class="g4">
       <div class="stat-card featured">
@@ -795,7 +811,7 @@ function renderCal() {
         <div style="font-size:22px;font-weight:900;color:${isToday ? 'var(--green)' : 'var(--t1)'};line-height:1">${d.getDate()}</div>
       </div>`;
       // Posts column
-      html += `<div style="flex:1;display:flex;flex-direction:column;gap:6px">`;
+      html += `<div style="flex:1;min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:6px">`;
       if (evt) html += `<div class="cal-event ev-event" style="font-size:10px">${evt}</div>`;
       if (dp.length) {
         dp.forEach(post => {
