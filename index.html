@@ -258,6 +258,80 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
 .prog-val{color:var(--t2)}
 .prog-bg{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
 .prog-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  /* Sidebar → bottom nav */
+  .sidebar{
+    width:100%;height:60px;top:auto;bottom:0;left:0;right:0;
+    flex-direction:row;border-right:none;border-top:1px solid var(--border);
+    overflow:visible
+  }
+  .sb-top,.sb-bottom{display:none}
+  .sb-nav{
+    padding:0;flex:1;display:flex;flex-direction:row;align-items:center;
+    justify-content:space-around;height:100%
+  }
+  .sb-section-lbl{display:none}
+  .nav-item{
+    flex-direction:column;gap:4px;padding:8px 16px;border-radius:10px;
+    font-size:9px;font-weight:600;margin-bottom:0;flex:1;justify-content:center;
+    border:none!important
+  }
+  .nav-item.active{background:transparent;color:var(--green)}
+  .nav-item svg{width:20px;height:20px}
+
+  /* Main */
+  .main{margin-left:0;padding-bottom:70px}
+
+  /* Topbar */
+  .topbar{padding:0 16px}
+  .tb-right{display:none}
+  .tb-badge{font-size:9px}
+
+  /* Credit */
+  .credit{padding:8px 16px;flex-wrap:nowrap;gap:8px}
+  .credit-txt{display:none}
+
+  /* Views */
+  .view{padding:16px 14px 20px}
+
+  /* Grids */
+  .g4{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:1fr 1fr}
+  .g2{grid-template-columns:1fr}
+  .g21{grid-template-columns:1fr}
+
+  /* Stat cards */
+  .stat-value{font-size:22px}
+  .stat-value input{font-size:22px}
+
+  /* Calendar */
+  .cal-body{padding:14px 12px}
+  .cal-controls{flex-direction:column;gap:8px}
+  .cal-ctrl-right{flex-wrap:wrap;gap:5px}
+  .cal-filter,.cal-add{font-size:9px;padding:4px 10px}
+  .cal-grid-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:8px}
+  .cal-grid{min-width:560px}
+
+  /* Calendar header days */
+  div[style*="grid-template-columns:repeat(7"]{min-width:560px;overflow:visible}
+
+  /* Modal */
+  .modal{margin:16px;max-width:100%}
+
+  /* Tracker grid */
+  #ov-tracker-list{grid-template-columns:1fr!important}
+
+  /* Todo */
+  .todo-add-row{flex-wrap:wrap}
+  #todo-new-cat{width:100%!important}
+  .todo-add-btn{width:100%}
+}
+
+@media (max-width: 400px) {
+  .g4{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -496,7 +570,7 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:6px">
+      <div class="cal-grid-wrap"><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:6px;min-width:560px">
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Lun</div>
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Mar</div>
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Mié</div>
@@ -504,8 +578,8 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Vie</div>
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Sáb</div>
         <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Dom</div>
-      </div>
-      <div class="cal-grid" id="cal-grid"></div>
+      </div></div>
+      <div class="cal-grid-wrap"><div class="cal-grid" id="cal-grid"></div></div>
     </div>
 
   </div>
