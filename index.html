@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Padel Up — Content Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  --bg:        #080808;
+  --bg1:       #0F0F0F;
+  --bg2:       #141414;
+  --bg3:       #1A1A1A;
+  --border:    rgba(255,255,255,0.06);
+  --border2:   rgba(255,255,255,0.11);
+  --green:     #22C55E;
+  --green-dim: rgba(34,197,94,0.12);
+  --green-low: rgba(34,197,94,0.06);
+  --white:     #FFFFFF;
+  --t1:        #F5F5F5;
+  --t2:        #888888;
+  --t3:        #444444;
+  --red:       #EF4444;
+  --yellow:    #EAB308;
+  --sidebar-w: 220px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:2px}
+
+.app{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sidebar-w);position:fixed;top:0;left:0;bottom:0;
+  background:var(--bg1);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:200;overflow-y:auto
+}
+.sb-top{padding:22px 18px 20px;border-bottom:1px solid var(--border)}
+.sb-logo{margin-bottom:10px}
+.sb-logo img{height:36px;width:auto;display:block}
+.sb-logo-fallback{font-size:18px;font-weight:900;color:var(--white);letter-spacing:-.5px}
+.sb-ch-handle{font-size:11px;color:var(--t3);font-weight:500}
+.sb-pills{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.sb-pill{display:inline-flex;align-items:center;gap:6px;border-radius:6px;padding:5px 10px;width:100%}
+.sb-pill-ig{background:rgba(225,48,108,0.1);border:1px solid rgba(225,48,108,0.25)}
+.sb-pill-eng{background:var(--green-dim);border:1px solid rgba(34,197,94,0.25)}
+.sb-pill-num{font-size:13px;font-weight:800}
+.sb-pill-ig .sb-pill-num{color:#E1306C}
+.sb-pill-eng .sb-pill-num{color:var(--green)}
+.sb-pill-lbl{font-size:10px;font-weight:600}
+.sb-pill-ig .sb-pill-lbl{color:rgba(225,48,108,0.7)}
+.sb-pill-eng .sb-pill-lbl{color:rgba(34,197,94,0.7)}
+
+.sb-nav{padding:16px 10px;flex:1}
+.sb-section-lbl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;padding:0 8px;margin-bottom:6px;margin-top:14px}
+.sb-section-lbl:first-child{margin-top:0}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;
+  font-size:12.5px;font-weight:500;color:var(--t2);margin-bottom:2px;transition:all .15s;user-select:none
+}
+.nav-item:hover{background:rgba(255,255,255,0.04);color:var(--t1)}
+.nav-item.active{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+.nav-item svg{flex-shrink:0}
+
+.sb-bottom{padding:16px 18px;border-top:1px solid var(--border)}
+.sb-live{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--t3);margin-bottom:10px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sb-stat{text-align:center;padding:8px;background:var(--bg2);border-radius:7px;border:1px solid var(--border)}
+.sb-stat-val{font-size:14px;font-weight:800;color:var(--t1)}
+.sb-stat-val input{font-size:14px;font-weight:800;color:var(--t1);background:transparent;border:none;outline:none;width:100%;text-align:center;font-family:'Inter',sans-serif;caret-color:var(--green)}
+.sb-stat-val input::placeholder{color:var(--t3)}
+.sb-stat-lbl{font-size:9px;color:var(--t3);margin-top:1px}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sidebar-w);flex:1}
+.topbar{
+  height:54px;background:rgba(8,8,8,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:100
+}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-title{font-size:15px;font-weight:800;color:var(--t1)}
+.tb-badge{font-size:10px;font-weight:700;color:var(--green);background:var(--green-dim);border:1px solid rgba(34,197,94,.2);padding:3px 8px;border-radius:5px}
+.tb-right{font-size:11px;color:var(--t3)}
+
+/* ── VIEWS ── */
+.view{display:none;padding:26px 28px 60px;animation:fadein .2s ease}
+.view.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.sh-lbl{font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--t3);white-space:nowrap}
+.sh-line{flex:1;height:1px;background:var(--border)}
+
+/* ── GRIDS ── */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.g21{display:grid;grid-template-columns:1.6fr 1fr;gap:12px;margin-bottom:14px}
+
+/* ── BASE CARD ── */
+.card{background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:20px;transition:border-color .15s}
+.card:hover{border-color:var(--border2)}
+.card-title{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:2px}
+.card-sub{font-size:10px;color:var(--t3);margin-bottom:14px}
+.card-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+
+/* ── STAT CARDS ── */
+.stat-card{background:var(--bg1);border:1px solid var(--border);border-radius:12px;padding:18px;position:relative;overflow:hidden;transition:border-color .15s}
+.stat-card:hover{border-color:var(--border2)}
+.stat-card.featured{border-color:rgba(34,197,94,0.25);background:linear-gradient(145deg,var(--bg1),#0D160F)}
+.stat-label{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.4px;margin-bottom:10px;text-transform:uppercase}
+.stat-value{font-size:30px;font-weight:900;letter-spacing:-1.5px;color:var(--white);line-height:1;margin-bottom:4px}
+.stat-value.green{color:var(--green)}
+.stat-value input{font-size:30px;font-weight:900;letter-spacing:-1.5px;color:var(--green);line-height:1;background:transparent;border:none;outline:none;width:100%;font-family:'Inter',sans-serif;caret-color:var(--green)}
+.stat-value input::placeholder{color:rgba(34,197,94,0.25)}
+.stat-sub{font-size:10px;color:var(--t3)}
+.stat-delta{position:absolute;top:18px;right:16px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px}
+.delta-up{background:rgba(34,197,94,.12);color:var(--green)}
+.delta-mid{background:rgba(234,179,8,.1);color:var(--yellow)}
+.delta-info{background:rgba(59,130,246,.1);color:#93C5FD}
+.stat-bar{height:2px;background:rgba(255,255,255,.05);border-radius:1px;overflow:hidden;margin-top:10px}
+.stat-bar-fill{height:100%;border-radius:1px}
+
+/* ── PLATFORM ROWS ── */
+.plat-list{display:flex;flex-direction:column;gap:8px}
+.plat-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--bg2);border-radius:9px;border:1px solid var(--border);transition:border-color .15s}
+.plat-row:hover{border-color:var(--border2)}
+.plat-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.plat-name{font-size:12px;font-weight:700;color:var(--t1)}
+.plat-handle{font-size:10px;color:var(--t3)}
+.plat-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.plat-num{text-align:right}
+.plat-num-val{font-size:14px;font-weight:800;color:var(--t1)}
+.plat-num-lbl{font-size:9px;color:var(--t3)}
+.pill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.pill-green{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.pill-yellow{background:rgba(234,179,8,.08);color:var(--yellow);border:1px solid rgba(234,179,8,.18)}
+.pill-blue{background:rgba(59,130,246,.08);color:#93C5FD;border:1px solid rgba(59,130,246,.2)}
+.pill-gray{background:rgba(255,255,255,.04);color:var(--t3);border:1px solid var(--border)}
+
+/* ── PILLAR ITEMS ── */
+.pillar-item{padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px}
+.pillar-item:last-child{margin-bottom:0}
+.pillar-name{font-size:11px;font-weight:700;margin-bottom:3px}
+.pillar-desc{font-size:10px;color:var(--t2)}
+
+/* ── CADENCE ── */
+.cadence-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:7px}
+.cadence-item:last-child{margin-bottom:0}
+.cadence-lbl{font-size:12px;font-weight:500;color:var(--t1)}
+.cadence-sub{font-size:10px;color:var(--t3);margin-top:2px}
+
+/* ── CALENDAR ── */
+.cal-section-title{font-size:9px;font-weight:700;letter-spacing:2.5px;color:var(--green);text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.cal-section-title::after{content:'';flex:1;height:1px;background:rgba(34,197,94,0.2)}
+.cal-body{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:14px;padding:20px}
+.cal-controls{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.cal-ctrl-left .cal-title{font-size:15px;font-weight:800;color:var(--white)}
+.cal-ctrl-left .cal-sub{font-size:10px;color:var(--t3);margin-top:4px}
+.cal-ctrl-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.cal-filter{font-size:10px;font-weight:600;padding:5px 13px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--t2);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.cal-filter:hover{border-color:rgba(34,197,94,.4);color:var(--green)}
+.cal-filter.active{background:var(--green-dim);border-color:rgba(34,197,94,.4);color:var(--green)}
+.cal-add{font-size:10px;font-weight:700;padding:5px 13px;border-radius:7px;border:1px solid rgba(34,197,94,.4);background:var(--green-dim);color:var(--green);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;margin-left:4px}
+.cal-add:hover{background:rgba(34,197,94,.22)}
+.cal-week-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-week-lbl{font-size:11px;color:var(--t3);font-weight:500}
+.cal-week-nav{display:flex;gap:5px}
+.cal-nav-btn{width:26px;height:26px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);color:var(--t2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;transition:all .15s}
+.cal-nav-btn:hover{border-color:var(--border2);color:var(--t1)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.cal-col{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:10px;padding:10px 7px;display:flex;flex-direction:column}
+.cal-col.today{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.025)}
+.cal-col.outside{opacity:0.3;pointer-events:none}
+.cal-day-hd{font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.cal-day-hd .day-num{display:block;font-size:16px;font-weight:800;color:var(--t2);letter-spacing:normal;margin-top:2px}
+.cal-day-hd.today-hd{color:var(--green)}
+.cal-day-hd.today-hd .day-num{color:var(--green)}
+.cal-events{display:flex;flex-direction:column;gap:5px;padding-top:2px;flex:1}
+.cal-event{padding:7px 6px;border-radius:7px;cursor:pointer;font-size:10px;font-weight:700;line-height:1.3;transition:all .13s;border:1px solid transparent}
+.cal-event:hover{filter:brightness(1.2);transform:translateY(-1px)}
+.ev-edu{background:rgba(59,130,246,.1);color:#93C5FD;border-color:rgba(59,130,246,.2)}
+.ev-tip{background:rgba(245,158,11,.1);color:#FCD34D;border-color:rgba(245,158,11,.2)}
+.ev-vir{background:rgba(239,68,68,.1);color:#FCA5A5;border-color:rgba(239,68,68,.2)}
+.ev-sto{background:rgba(139,92,246,.1);color:#C4B5FD;border-color:rgba(139,92,246,.2)}
+.ev-event{background:rgba(255,255,255,.06);color:var(--t2);border-color:var(--border2)}
+.ev-label{font-size:9px;font-weight:500;color:inherit;opacity:.7;margin-top:2px;display:block}
+.cal-add-slot{min-height:36px;border:1px dashed var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);font-size:18px;transition:all .15s;margin-top:4px}
+.cal-add-slot:hover{border-color:rgba(34,197,94,.3);color:var(--green);background:var(--green-low)}
+
+/* ── TO-DO ── */
+.todo-add-row{display:flex;gap:8px;margin-bottom:18px}
+.todo-input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;font-size:13px;color:var(--t1);font-family:'Inter',sans-serif;transition:border-color .15s;outline:none}
+.todo-input:focus{border-color:rgba(34,197,94,.4)}
+.todo-input::placeholder{color:var(--t3)}
+.todo-add-btn{padding:11px 18px;background:var(--green);border:none;border-radius:9px;font-size:12px;font-weight:700;color:#000;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:'Inter',sans-serif}
+.todo-add-btn:hover{background:#1DAF52}
+.todo-section-lbl{font-size:9px;font-weight:700;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.todo-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.todo-item{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;background:var(--bg1);border:1px solid var(--border);border-radius:9px;transition:border-color .15s;cursor:default}
+.todo-item:hover{border-color:var(--border2)}
+.todo-item.done .todo-text{color:var(--t3);text-decoration:line-through}
+.todo-item.done .todo-cat{opacity:.4}
+.todo-check{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--t3);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:10px;font-weight:900}
+.todo-check.checked{background:var(--green);border-color:var(--green);color:#000}
+.todo-text{font-size:12.5px;font-weight:500;color:var(--t1);flex:1;line-height:1.4}
+.todo-meta{display:flex;align-items:center;gap:7px;margin-left:auto;flex-shrink:0}
+.todo-cat{font-size:9px;font-weight:700;padding:2px 7px;border-radius:5px}
+.cat-contenido{background:rgba(59,130,246,.1);color:#93C5FD}
+.cat-pub{background:rgba(34,197,94,.1);color:var(--green)}
+.cat-comunidad{background:rgba(245,158,11,.1);color:#FCD34D}
+.cat-analisis{background:rgba(255,255,255,.05);color:var(--t3)}
+.todo-del{width:22px;height:22px;border-radius:5px;background:transparent;border:none;color:var(--t3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;font-family:'Inter',sans-serif}
+.todo-del:hover{background:rgba(239,68,68,.1);color:var(--red)}
+
+/* ── TRACKER (in overview) ── */
+.tracker-task{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s}
+.tracker-task:hover{border-color:var(--border2)}
+.tracker-task.done .tt-text{color:var(--t3);text-decoration:line-through}
+.tt-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--t3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;transition:all .15s}
+.tracker-task.done .tt-check{background:var(--green);border-color:var(--green);color:#000}
+.tt-text{font-size:11.5px;font-weight:500;color:var(--t2);flex:1}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:24px;width:100%;max-width:420px;animation:fadein .18s ease}
+.modal-title{font-size:15px;font-weight:800;color:var(--t1);margin-bottom:16px}
+.modal-field{margin-bottom:12px}
+.modal-lbl{font-size:11px;font-weight:600;color:var(--t2);margin-bottom:5px}
+.modal-in{width:100%;background:var(--bg1);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--t1);font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+.modal-in:focus{border-color:rgba(34,197,94,.4)}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-ghost{padding:8px 15px;border-radius:7px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-ghost:hover{color:var(--t1);border-color:var(--border2)}
+.btn-green{padding:8px 15px;border-radius:7px;background:var(--green);border:none;color:#000;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.btn-green:hover{background:#1DAF52}
+
+/* ── CREDIT ── */
+.credit{padding:10px 28px;background:rgba(34,197,94,.04);border-bottom:1px solid rgba(34,197,94,.1);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.credit-avatar{width:24px;height:24px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#000;flex-shrink:0}
+.credit-name{font-size:11px;font-weight:700;color:var(--t1)}
+.credit-txt{font-size:10px;color:var(--t3);flex:1;min-width:200px}
+.credit-tag{font-size:9px;padding:3px 9px;background:var(--green-dim);border:1px solid rgba(34,197,94,.2);border-radius:5px;color:var(--green);font-weight:700;white-space:nowrap;flex-shrink:0}
+
+/* ── PROG BARS ── */
+.prog{margin-bottom:12px}
+.prog-top{display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px}
+.prog-name{font-weight:600;color:var(--t1)}
+.prog-val{color:var(--t2)}
+.prog-bg{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="sb-top">
+    <div class="sb-logo">
+      <img src="https://cdn.prod.website-files.com/6657bfd4bd5e6513709cecf5/696b0d2e0b0fbad01f9cc73b_logo-white.png"
+           alt="Padel Up"
+           onerror="this.style.display='none';document.getElementById('sb-fallback').style.display='block'" />
+      <div id="sb-fallback" style="display:none" class="sb-logo-fallback">PADEL UP</div>
+    </div>
+    <div class="sb-ch-handle">@padelupclub</div>
+    <div class="sb-pills">
+      <div class="sb-pill sb-pill-ig">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E1306C" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="#E1306C" stroke="none"/></svg>
+        <span class="sb-pill-num" id="sb-seg-lbl">—</span>
+        <span class="sb-pill-lbl">Instagram</span>
+      </div>
+      <div class="sb-pill sb-pill-eng">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        <span class="sb-pill-num" id="sb-eng-lbl">—</span>
+        <span class="sb-pill-lbl">Engagement</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-section-lbl">Navigation</div>
+    <div class="nav-item active" onclick="showView('overview',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-item" onclick="showView('calendar',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Calendario
+    </div>
+    <div class="nav-item" onclick="showView('todo',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      To-Do semanal
+    </div>
+  </div>
+
+  <div class="sb-bottom">
+    <div class="sb-live"><div class="dot"></div>Julio 2026</div>
+    <div class="sb-stats">
+      <div class="sb-stat">
+        <div class="sb-stat-val"><input type="text" id="sb-seg-input" placeholder="—" oninput="syncSeg(this.value)" /></div>
+        <div class="sb-stat-lbl">Seguidores</div>
+      </div>
+      <div class="sb-stat">
+        <div class="sb-stat-val" id="sb-posts-val">0/19</div>
+        <div class="sb-stat-lbl">Posts</div>
+      </div>
+      <div class="sb-stat">
+        <div class="sb-stat-val"><input type="text" id="sb-eng-input" placeholder="—" oninput="syncEng(this.value)" /></div>
+        <div class="sb-stat-lbl">Eng. %</div>
+      </div>
+      <div class="sb-stat">
+        <div class="sb-stat-val" style="color:var(--green)">2</div>
+        <div class="sb-stat-lbl">Sedes</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════ MAIN ═══════ -->
+<main class="main">
+
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title" id="topbar-title">Overview</div>
+      <div class="tb-badge">Plan de Contenido</div>
+    </div>
+    <div class="tb-right">info@padelup.club · Julio 2026</div>
+  </div>
+
+  <div class="credit">
+    <div class="credit-avatar">JG</div>
+    <div class="credit-name">Built by Jefferson Garcia</div>
+    <div class="credit-txt">Plan de contenido Instagram para @padelupclub · Culver City + Century City</div>
+    <div class="credit-tag">CONTENT DASHBOARD</div>
+  </div>
+
+  <!-- ═══ OVERVIEW ═══ -->
+  <div class="view active" id="view-overview">
+
+    <div class="g4">
+      <div class="stat-card featured">
+        <div class="stat-delta delta-up">Primario</div>
+        <div class="stat-label">Seguidores Instagram</div>
+        <div class="stat-value"><input type="text" id="kpi-seg" placeholder="—" oninput="syncSeg(this.value)" /></div>
+        <div class="stat-sub">@padelupclub · actualiza con dato real</div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="seg-bar" style="width:30%;background:var(--green)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-delta delta-up">Activo</div>
+        <div class="stat-label">Posts publicados</div>
+        <div class="stat-value" id="kpi-pub">0</div>
+        <div class="stat-sub"><span id="kpi-pub-sub">0 de 19 publicados en julio</span></div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="pub-bar" style="width:0%;background:#E1306C"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-delta delta-mid">Meta: 5%</div>
+        <div class="stat-label">Engagement Rate</div>
+        <div class="stat-value" style="color:var(--yellow)"><input type="text" id="kpi-eng" placeholder="—" oninput="syncEng(this.value)" style="color:var(--yellow)" /></div>
+        <div class="stat-sub">% promedio por post · objetivo 5%</div>
+        <div class="stat-bar"><div class="stat-bar-fill" id="eng-bar" style="width:0%;background:var(--yellow)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-delta delta-info">Regla fija</div>
+        <div class="stat-label">Cadencia semanal</div>
+        <div class="stat-value" style="color:#93C5FD">2+2</div>
+        <div class="stat-sub">Mín. 2 Reels + 2 Fotos/Carruseles</div>
+        <div class="stat-bar"><div class="stat-bar-fill" style="width:100%;background:#3B82F6"></div></div>
+      </div>
+    </div>
+
+    <div class="g21">
+      <div class="card">
+        <div class="card-hd">
+          <div><div class="card-title">Canales</div><div class="card-sub">Estado actual de plataformas</div></div>
+        </div>
+        <div class="plat-list">
+          <div class="plat-row">
+            <div class="plat-icon" style="background:linear-gradient(135deg,#F09433,#DC2743,#BC1888)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="white" stroke="none"/></svg>
+            </div>
+            <div style="flex:1">
+              <div class="plat-name">Instagram</div>
+              <div class="plat-handle">@padelupclub · Culver City + Century City</div>
+            </div>
+            <div class="plat-right">
+              <div class="plat-num"><div class="plat-num-val" id="plat-seg">—</div><div class="plat-num-lbl">seguidores</div></div>
+              <span class="pill pill-green">Primario</span>
+            </div>
+          </div>
+          <div class="plat-row">
+            <div class="plat-icon" style="background:#111;border:1px solid rgba(105,201,208,.2)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#69C9D0"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.77.39 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 0 0-.79-.06 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div class="plat-name">TikTok</div>
+              <div class="plat-handle">Reels adaptados · mismo contenido, cero trabajo extra</div>
+            </div>
+            <div class="plat-right">
+              <span class="pill pill-yellow">Expansión</span>
+            </div>
+          </div>
+          <div class="plat-row">
+            <div class="plat-icon" style="background:#25D366">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.986 0C5.376 0 .006 5.344.006 11.919c0 2.096.549 4.059 1.505 5.759L0 24l6.532-1.711a11.945 11.945 0 0 0 5.454 1.311c6.61 0 11.98-5.344 11.98-11.919C23.966 5.344 18.596 0 11.986 0zm0 21.797a9.986 9.986 0 0 1-5.092-1.396l-.365-.217-3.787.991 1.012-3.685-.237-.378A9.895 9.895 0 0 1 2 11.919C2 6.447 6.498 2 11.986 2s9.986 4.447 9.986 9.919-4.498 9.878-9.986 9.878z"/></svg>
+            </div>
+            <div style="flex:1">
+              <div class="plat-name">WhatsApp Community</div>
+              <div class="plat-handle">Comunidad activa del club · distribución directa</div>
+            </div>
+            <div class="plat-right">
+              <span class="pill pill-blue">Comunidad</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><div><div class="card-title">Pilares de contenido</div><div class="card-sub">Qué publicamos y por qué</div></div></div>
+        <div>
+          <div class="pillar-item" style="border-left:3px solid #3B82F6">
+            <div class="pillar-name" style="color:#93C5FD">Educación</div>
+            <div class="pillar-desc">Técnica, reglas, guías para empezar. Posiciona a Padel Up como referente en LA.</div>
+          </div>
+          <div class="pillar-item" style="border-left:3px solid #F59E0B">
+            <div class="pillar-name" style="color:#FCD34D">Tips</div>
+            <div class="pillar-desc">Consejos prácticos y accionables. Alto volumen de guardados.</div>
+          </div>
+          <div class="pillar-item" style="border-left:3px solid #EF4444">
+            <div class="pillar-name" style="color:#FCA5A5">Viral</div>
+            <div class="pillar-desc">POV, tendencias, humor deportivo. Máximo alcance en Reels.</div>
+          </div>
+          <div class="pillar-item" style="border-left:3px solid #8B5CF6;margin-bottom:0">
+            <div class="pillar-name" style="color:#C4B5FD">Storytelling</div>
+            <div class="pillar-desc">Comunidad, behind the scenes, sedes. Construye identidad y fidelidad.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Tracker in Overview -->
+    <div class="sh">
+      <div class="sh-lbl">Tracker semanal</div>
+      <div class="sh-line"></div>
+      <div id="ov-week-lbl" style="font-size:10px;color:var(--t3);white-space:nowrap;margin-left:8px"></div>
+      <div style="margin-left:10px;font-size:9px;padding:3px 9px;background:var(--green-dim);border:1px solid rgba(34,197,94,.18);border-radius:5px;color:var(--green);font-weight:700;white-space:nowrap">Se reinicia cada domingo</div>
+    </div>
+    <div class="card" style="padding:16px 18px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div><div class="card-title">Tareas de esta semana</div><div class="card-sub">Marca mientras avanzas · las tareas completadas se reinician el domingo a medianoche</div></div>
+        <div id="ov-tracker-pct" style="font-size:22px;font-weight:900;color:var(--green);letter-spacing:-1px">0%</div>
+      </div>
+      <div style="height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-bottom:18px">
+        <div id="ov-tracker-bar" style="height:100%;background:var(--green);border-radius:2px;transition:width .5s ease;width:0%"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="ov-tracker-list"></div>
+    </div>
+
+  </div>
+
+  <!-- ═══ CALENDARIO ═══ -->
+  <div class="view" id="view-calendar">
+
+    <div class="cal-section-title">Content Calendar · Julio 2026</div>
+
+    <div class="cal-body">
+      <div class="cal-controls">
+        <div class="cal-ctrl-left">
+          <div class="cal-title" id="cal-main-title">Semana de julio 2026 — Clic en un post para editar</div>
+          <div class="cal-sub">Instagram @padelupclub · Culver City + Century City</div>
+        </div>
+        <div class="cal-ctrl-right">
+          <button class="cal-filter active" id="cf-all" onclick="setFilter(null)">Todos</button>
+          <button class="cal-filter" id="cf-edu" onclick="setFilter('edu')">Educación</button>
+          <button class="cal-filter" id="cf-tip" onclick="setFilter('tip')">Tips</button>
+          <button class="cal-filter" id="cf-vir" onclick="setFilter('vir')">Viral</button>
+          <button class="cal-filter" id="cf-sto" onclick="setFilter('sto')">Storytelling</button>
+          <button class="cal-add" onclick="openModal()">+ Agregar</button>
+        </div>
+      </div>
+
+      <div class="cal-week-bar">
+        <div class="cal-week-lbl" id="cal-week-lbl"></div>
+        <div class="cal-week-nav">
+          <button class="cal-nav-btn" onclick="shiftWeek(-1)">&#8249;</button>
+          <button class="cal-nav-btn" onclick="shiftWeek(1)">&#8250;</button>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:6px">
+        <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Lun</div>
+        <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Mar</div>
+        <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Mié</div>
+        <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Jue</div>
+        <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Vie</div>
+        <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Sáb</div>
+        <div style="font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;text-align:center">Dom</div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+
+  </div>
+
+  <!-- ═══ TO-DO ═══ -->
+  <div class="view" id="view-todo">
+
+    <div class="sh"><div class="sh-lbl">To-Do semanal</div><div class="sh-line"></div><div id="todo-week-lbl" style="font-size:10px;color:var(--t3);white-space:nowrap;margin-left:8px"></div></div>
+
+    <div class="todo-add-row">
+      <input type="text" class="todo-input" id="todo-new-input" placeholder="Agregar nueva tarea..." onkeydown="if(event.key==='Enter')addTodo()" />
+      <select id="todo-new-cat" class="todo-input" style="width:130px;cursor:pointer">
+        <option value="cat-contenido">Contenido</option>
+        <option value="cat-pub">Publicación</option>
+        <option value="cat-comunidad">Comunidad</option>
+        <option value="cat-analisis">Análisis</option>
+      </select>
+      <button class="todo-add-btn" onclick="addTodo()">+ Agregar</button>
+    </div>
+
+    <div class="todo-section-lbl">Contenido</div>
+    <div class="todo-list" id="todo-contenido"></div>
+    <div class="todo-section-lbl">Publicación</div>
+    <div class="todo-list" id="todo-pub"></div>
+    <div class="todo-section-lbl">Comunidad</div>
+    <div class="todo-list" id="todo-comunidad"></div>
+    <div class="todo-section-lbl">Análisis</div>
+    <div class="todo-list" id="todo-analisis"></div>
+
+  </div>
+
+</main>
+</div>
+
+<!-- ═══ MODAL ═══ -->
+<div class="overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-title">Agregar publicación</div>
+    <div class="modal-field">
+      <div class="modal-lbl">Día de julio</div>
+      <input type="number" class="modal-in" id="m-day" min="1" max="31" placeholder="15" />
+    </div>
+    <div class="modal-field">
+      <div class="modal-lbl">Título del contenido</div>
+      <input type="text" class="modal-in" id="m-title" placeholder="Ej. Tour de canchas — Culver City" />
+    </div>
+    <div class="modal-field">
+      <div class="modal-lbl">Formato</div>
+      <select class="modal-in" id="m-fmt">
+        <option>Reel</option><option>Carrusel</option><option>Foto</option><option>Story</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <div class="modal-lbl">Pilar</div>
+      <select class="modal-in" id="m-pil">
+        <option value="edu">Educación</option>
+        <option value="tip">Tips</option>
+        <option value="vir">Viral</option>
+        <option value="sto">Storytelling</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-green" onclick="addPost()">Agregar post</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── DATA ── */
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const FULL_MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+const PILLAR = {
+  edu: { label: 'Educación',    cls: 'ev-edu', color: '#93C5FD' },
+  tip: { label: 'Tips',         cls: 'ev-tip', color: '#FCD34D' },
+  vir: { label: 'Viral',        cls: 'ev-vir', color: '#FCA5A5' },
+  sto: { label: 'Storytelling', cls: 'ev-sto', color: '#C4B5FD' },
+};
+
+const EVENTS = { '2026-07-04': '🇺🇸 Independence Day' };
+
+let posts = [
+  { d:'2026-07-01', fmt:'Reel',     title:'¿Qué es el padel? La guía para empezar en LA',          p:'edu' },
+  { d:'2026-07-02', fmt:'Foto',     title:'Bienvenidos a julio — Culver City te espera',            p:'sto' },
+  { d:'2026-07-04', fmt:'Foto',     title:'Happy 4th of July from your padel family',               p:'sto' },
+  { d:'2026-07-05', fmt:'Reel',     title:'POV: tu primer partido de padel en Los Ángeles',         p:'vir' },
+  { d:'2026-07-07', fmt:'Carrusel', title:'Los 3 golpes que debes dominar antes de todo',           p:'edu' },
+  { d:'2026-07-09', fmt:'Foto',     title:'Tip de la semana: cómo posicionarte en la cancha',       p:'tip' },
+  { d:'2026-07-11', fmt:'Reel',     title:'This is what Saturday feels like at Padel Up',           p:'vir' },
+  { d:'2026-07-12', fmt:'Foto',     title:'Conoce a nuestra comunidad en Culver City',              p:'sto' },
+  { d:'2026-07-14', fmt:'Carrusel', title:'La volea de pared en 3 pasos simples',                   p:'edu' },
+  { d:'2026-07-16', fmt:'Reel',     title:'Antes y después de tu primer mes jugando padel',         p:'tip' },
+  { d:'2026-07-18', fmt:'Foto',     title:'The Skydeck, Level 03 — canchas con vista en LA',        p:'sto' },
+  { d:'2026-07-19', fmt:'Reel',     title:'Rating padel players by their serve face 😂',            p:'vir' },
+  { d:'2026-07-21', fmt:'Carrusel', title:'Membresías Padel Up: ¿cuál es la tuya?',                p:'tip' },
+  { d:'2026-07-23', fmt:'Reel',     title:'Un día en la vida de un miembro de Padel Up',           p:'sto' },
+  { d:'2026-07-25', fmt:'Foto',     title:'Checklist: lo que siempre llevas a la cancha',           p:'tip' },
+  { d:'2026-07-26', fmt:'Reel',     title:'Watch me go from zero to hero in padel',                p:'vir' },
+  { d:'2026-07-28', fmt:'Carrusel', title:'Julio en imágenes — gracias comunidad',                  p:'sto' },
+  { d:'2026-07-30', fmt:'Reel',     title:'Top 3 errores que todos cometemos al empezar',          p:'edu' },
+  { d:'2026-07-31', fmt:'Foto',     title:'Lo que viene en agosto — mark your calendar',            p:'tip' },
+];
+
+let todos = {
+  'cat-contenido': [
+    { text: 'Grabar los 2 Reels de la semana', done: false },
+    { text: 'Editar Reels: subtítulos + música + cortes', done: false },
+    { text: 'Producir 2 fotos o carruseles de la semana', done: false },
+    { text: 'Escribir captions con hashtags relevantes', done: false },
+  ],
+  'cat-pub': [
+    { text: 'Programar posts en Meta Business Suite', done: false },
+    { text: 'Verificar horarios: 11am–2pm o 6pm–8pm PT', done: false },
+    { text: 'Publicar Stories el día de cada post', done: false },
+  ],
+  'cat-comunidad': [
+    { text: 'Responder comentarios (primeras 2h son críticas)', done: false },
+    { text: 'Interactuar con 10 cuentas de padel en LA', done: false },
+    { text: 'Revisar y repostear UGC de miembros del club', done: false },
+  ],
+  'cat-analisis': [
+    { text: 'Revisar métricas del mejor post de la semana', done: false },
+    { text: 'Actualizar seguidores y engagement en el dashboard', done: false },
+  ],
+};
+
+let weekOffset = 0;
+let activeFilter = null;
+
+/* ── VIEWS ── */
+function showView(name, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  const titles = { overview: 'Overview', calendar: 'Calendario', todo: 'To-Do semanal' };
+  document.getElementById('topbar-title').textContent = titles[name];
+  if (name === 'calendar') renderCal();
+  if (name === 'todo') renderTodo();
+  if (name === 'overview') { renderOvTracker(); setOvWeekLabel(); }
+}
+
+/* ── SYNC ── */
+function syncSeg(v) {
+  ['kpi-seg','sb-seg-input'].forEach(id => { if(document.getElementById(id).value !== v) document.getElementById(id).value = v; });
+  const num = parseInt(v.replace(/[^0-9]/g,'')) || 0;
+  document.getElementById('sb-seg-lbl').textContent = num ? (num >= 1000 ? (num/1000).toFixed(1)+'K' : num) : '—';
+  document.getElementById('plat-seg').textContent = num ? num.toLocaleString() : '—';
+}
+
+function syncEng(v) {
+  ['kpi-eng','sb-eng-input'].forEach(id => { if(document.getElementById(id).value !== v) document.getElementById(id).value = v; });
+  document.getElementById('sb-eng-lbl').textContent = v ? v + '%' : '—';
+  const n = parseFloat(v) || 0;
+  document.getElementById('eng-bar').style.width = Math.min(n * 10, 100) + '%';
+}
+
+function updatePostsKPI() {
+  const total = posts.length;
+  const pct = Math.round(posts.filter(p => p.status === 'pub').length / total * 100) || 0;
+  const pub = posts.filter(p => p.status === 'pub').length;
+  document.getElementById('kpi-pub').textContent = pub;
+  document.getElementById('kpi-pub-sub').textContent = pub + ' de ' + total + ' publicados en julio';
+  document.getElementById('pub-bar').style.width = (pub / total * 100) + '%';
+  document.getElementById('sb-posts-val').textContent = pub + '/' + total;
+}
+
+/* ── CALENDAR ── */
+function getWeekStart(offset) {
+  const base = new Date(2026, 5, 29);
+  base.setDate(base.getDate() + offset * 7);
+  return base;
+}
+function dateKey(d) { return d.toISOString().split('T')[0]; }
+
+function renderCal() {
+  const ws = getWeekStart(weekOffset);
+  const we = new Date(ws); we.setDate(we.getDate() + 6);
+  const today = new Date();
+  document.getElementById('cal-week-lbl').textContent =
+    MONTHS[ws.getMonth()] + ' ' + ws.getDate() + ' – ' + MONTHS[we.getMonth()] + ' ' + we.getDate() + ', ' + we.getFullYear();
+  document.getElementById('cal-main-title').textContent =
+    'Semana del ' + ws.getDate() + ' al ' + we.getDate() + ' de ' + FULL_MONTHS[we.getMonth()] + ' — Clic para editar estado';
+
+  const DAYS_SHORT = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+  let html = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(ws); d.setDate(d.getDate() + i);
+    const key = dateKey(d);
+    const inJul = d.getMonth() === 6;
+    const isToday = d.toDateString() === today.toDateString();
+    const dp = posts.filter(p => p.d === key && (!activeFilter || p.p === activeFilter));
+    const evt = EVENTS[key];
+
+    html += `<div class="cal-col${isToday ? ' today' : ''}${!inJul ? ' outside' : ''}">`;
+    html += `<div class="cal-day-hd${isToday ? ' today-hd' : ''}">
+      ${DAYS_SHORT[i]}
+      <span class="day-num">${d.getDate()}</span>
+    </div>`;
+    html += `<div class="cal-events">`;
+    if (evt) html += `<div class="cal-event ev-event">${evt}</div>`;
+    dp.forEach(post => {
+      const idx = posts.indexOf(post);
+      const pl = PILLAR[post.p];
+      html += `<div class="cal-event ${pl.cls}" onclick="cycleStatus(${idx})" title="${post.fmt} · ${pl.label}">
+        ${post.title}
+        <span class="ev-label">${post.fmt} · ${pl.label}</span>
+      </div>`;
+    });
+    if (inJul) html += `<div class="cal-add-slot" onclick="openModalDay(${d.getDate()})">+</div>`;
+    html += `</div></div>`;
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+  updatePostsKPI();
+}
+
+function cycleStatus(i) {
+  const states = [undefined, 'pub', 'prod', 'rev'];
+  const cur = states.indexOf(posts[i].status);
+  posts[i].status = states[(cur + 1) % states.length];
+  renderCal();
+}
+
+function shiftWeek(d) { weekOffset += d; renderCal(); }
+
+function setFilter(f) {
+  activeFilter = f;
+  ['all','edu','tip','vir','sto'].forEach(k => {
+    document.getElementById('cf-' + k).classList.toggle('active', (!f && k === 'all') || f === k);
+  });
+  renderCal();
+}
+
+/* ── MODAL ── */
+function openModal(day) {
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('m-day').value = day || '';
+  document.getElementById('m-title').value = '';
+  setTimeout(() => document.getElementById(day ? 'm-title' : 'm-day').focus(), 50);
+}
+function openModalDay(day) { openModal(day); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function addPost() {
+  const day = parseInt(document.getElementById('m-day').value);
+  const title = document.getElementById('m-title').value.trim();
+  if (!day || !title) return;
+  const fmt = document.getElementById('m-fmt').value;
+  const p = document.getElementById('m-pil').value;
+  const ds = String(day).padStart(2,'0');
+  posts.push({ d:`2026-07-${ds}`, fmt, title, p });
+  posts.sort((a,b) => a.d.localeCompare(b.d));
+  closeModal();
+  renderCal();
+}
+
+/* ── TODO ── */
+function renderTodo() {
+  setTodoWeekLabel();
+  const cats = { 'cat-contenido':'todo-contenido', 'cat-pub':'todo-pub', 'cat-comunidad':'todo-comunidad', 'cat-analisis':'todo-analisis' };
+  Object.entries(cats).forEach(([cat, elId]) => {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    el.innerHTML = todos[cat].map((t, i) =>
+      `<div class="todo-item${t.done?' done':''}" >
+        <div class="todo-check${t.done?' checked':''}" onclick="toggleTodo('${cat}',${i})">${t.done?'✓':''}</div>
+        <div class="todo-text">${t.text}</div>
+        <div class="todo-meta">
+          <span class="todo-cat ${cat}">${catLabel(cat)}</span>
+          <button class="todo-del" onclick="deleteTodo('${cat}',${i})">×</button>
+        </div>
+      </div>`
+    ).join('');
+  });
+}
+
+function catLabel(cat) {
+  return { 'cat-contenido':'Contenido', 'cat-pub':'Publicación', 'cat-comunidad':'Comunidad', 'cat-analisis':'Análisis' }[cat];
+}
+
+function toggleTodo(cat, i) {
+  todos[cat][i].done = !todos[cat][i].done;
+  renderTodo();
+  renderOvTracker();
+}
+
+function deleteTodo(cat, i) {
+  todos[cat].splice(i, 1);
+  renderTodo();
+  renderOvTracker();
+}
+
+function addTodo() {
+  const txt = document.getElementById('todo-new-input').value.trim();
+  const cat = document.getElementById('todo-new-cat').value;
+  if (!txt) return;
+  todos[cat].push({ text: txt, done: false });
+  document.getElementById('todo-new-input').value = '';
+  renderTodo();
+  renderOvTracker();
+}
+
+function setTodoWeekLabel() {
+  const today = new Date();
+  const mon = new Date(today);
+  mon.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  const lbl = 'Semana del ' + mon.getDate() + ' al ' + sun.getDate() + ' de ' + FULL_MONTHS[sun.getMonth()] + ' ' + sun.getFullYear();
+  document.getElementById('todo-week-lbl').textContent = lbl;
+}
+
+/* ── OV TRACKER ── */
+function renderOvTracker() {
+  const all = Object.values(todos).flat();
+  const done = all.filter(t => t.done).length;
+  const pct = all.length ? Math.round(done / all.length * 100) : 0;
+  document.getElementById('ov-tracker-pct').textContent = pct + '%';
+  document.getElementById('ov-tracker-bar').style.width = pct + '%';
+
+  const tasks = all.slice(0, 8);
+  document.getElementById('ov-tracker-list').innerHTML = tasks.map(t =>
+    `<div class="tracker-task${t.done?' done':''}">
+      <div class="tt-check">${t.done?'✓':''}</div>
+      <div class="tt-text">${t.text}</div>
+    </div>`
+  ).join('');
+}
+
+function setOvWeekLabel() {
+  const today = new Date();
+  const mon = new Date(today);
+  mon.setDate(today.getDate() - (today.getDay() === 0 ? 6 : today.getDay() - 1));
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  document.getElementById('ov-week-lbl').textContent =
+    MONTHS[mon.getMonth()] + ' ' + mon.getDate() + ' – ' + MONTHS[sun.getMonth()] + ' ' + sun.getDate();
+}
+
+/* ── INIT ── */
+renderCal();
+renderOvTracker();
+setOvWeekLabel();
+updatePostsKPI();
+</script>
+</body>
+</html>
