@@ -802,9 +802,9 @@ function renderCal() {
           const idx = posts.indexOf(post);
           const pl = PILLAR[post.p];
           const statusDot = post.status === 'pub' ? '#22C55E' : post.status === 'prod' ? '#F59E0B' : post.status === 'rev' ? '#3B82F6' : 'var(--t3)';
-          html += `<div class="cal-event ${pl.cls}" onclick="cycleStatus(${idx})" style="display:flex;align-items:center;gap:8px;font-size:11px;padding:9px 10px">
+          html += `<div class="cal-event ${pl.cls}" onclick="cycleStatus(${idx})" style="display:flex;align-items:center;gap:8px;font-size:11px;padding:9px 10px;overflow:hidden;max-width:100%">
             <span style="width:7px;height:7px;border-radius:50%;background:${statusDot};flex-shrink:0"></span>
-            <span style="flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis">${post.title}</span>
+            <span style="flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0">${post.title}</span>
             <span style="font-size:9px;opacity:.65;white-space:nowrap;flex-shrink:0">${post.fmt}</span>
           </div>`;
         });
@@ -953,12 +953,24 @@ function renderOvTracker() {
   document.getElementById('ov-tracker-bar').style.width = pct + '%';
 
   const tasks = all.slice(0, 8);
-  document.getElementById('ov-tracker-list').innerHTML = tasks.map(t =>
-    `<div class="tracker-task${t.done?' done':''}">
+  document.getElementById('ov-tracker-list').innerHTML = tasks.map((t, i) => {
+    // Find the category and index in todos for this task
+    let cat = '', catIdx = 0;
+    for (const [c, arr] of Object.entries(todos)) {
+      const fi = arr.indexOf(t);
+      if (fi !== -1) { cat = c; catIdx = fi; break; }
+    }
+    return `<div class="tracker-task${t.done?' done':''}" onclick="toggleOvTask('${cat}',${catIdx})">
       <div class="tt-check">${t.done?'✓':''}</div>
       <div class="tt-text">${t.text}</div>
-    </div>`
-  ).join('');
+    </div>`;
+  }).join('');
+}
+
+function toggleOvTask(cat, i) {
+  todos[cat][i].done = !todos[cat][i].done;
+  renderTodo();
+  renderOvTracker();
 }
 
 function setOvWeekLabel() {
