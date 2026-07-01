@@ -177,6 +177,7 @@ html,body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--t1);mi
 .cal-nav-btn{width:26px;height:26px;border-radius:6px;background:var(--bg2);border:1px solid var(--border);color:var(--t2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;transition:all .15s}
 .cal-nav-btn:hover{border-color:var(--border2);color:var(--t1)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+@media(max-width:768px){.cal-grid{display:block}}
 .cal-col{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:10px;padding:10px 7px;display:flex;flex-direction:column}
 .cal-col.today{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.025)}
 .cal-col.outside{opacity:0.3;pointer-events:none}
@@ -766,34 +767,83 @@ function renderCal() {
     'Semana del ' + ws.getDate() + ' al ' + we.getDate() + ' de ' + FULL_MONTHS[we.getMonth()] + ' — Clic para editar estado';
 
   const DAYS_SHORT = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
-  let html = '';
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(ws); d.setDate(d.getDate() + i);
-    const key = dateKey(d);
-    const inJul = d.getMonth() === 6;
-    const isToday = d.toDateString() === today.toDateString();
-    const dp = posts.filter(p => p.d === key && (!activeFilter || p.p === activeFilter));
-    const evt = EVENTS[key];
+  const DAYS_FULL = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  const isMobile = window.innerWidth < 768;
 
-    html += `<div class="cal-col${isToday ? ' today' : ''}${!inJul ? ' outside' : ''}">`;
-    html += `<div class="cal-day-hd${isToday ? ' today-hd' : ''}">
-      ${DAYS_SHORT[i]}
-      <span class="day-num">${d.getDate()}</span>
-    </div>`;
-    html += `<div class="cal-events">`;
-    if (evt) html += `<div class="cal-event ev-event">${evt}</div>`;
-    dp.forEach(post => {
-      const idx = posts.indexOf(post);
-      const pl = PILLAR[post.p];
-      html += `<div class="cal-event ${pl.cls}" onclick="cycleStatus(${idx})" title="${post.fmt} · ${pl.label}">
-        ${post.title}
-        <span class="ev-label">${post.fmt} · ${pl.label}</span>
+  // Hide/show the day-of-week header row
+  const headerWrap = document.querySelector('.cal-header-row');
+  if (headerWrap) headerWrap.style.display = isMobile ? 'none' : '';
+
+  if (isMobile) {
+    // ── AGENDA VIEW (mobile) ──
+    let html = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(ws); d.setDate(d.getDate() + i);
+      const key = dateKey(d);
+      const inJul = d.getMonth() === 6;
+      const isToday = d.toDateString() === today.toDateString();
+      const dp = posts.filter(p => p.d === key && (!activeFilter || p.p === activeFilter));
+      const evt = EVENTS[key];
+      if (!dp.length && !evt && !inJul) continue;
+
+      html += `<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start">`;
+      // Day label column
+      html += `<div style="min-width:46px;text-align:center;padding-top:2px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;color:${isToday ? 'var(--green)' : 'var(--t3)'};text-transform:uppercase">${DAYS_SHORT[i]}</div>
+        <div style="font-size:22px;font-weight:900;color:${isToday ? 'var(--green)' : 'var(--t1)'};line-height:1">${d.getDate()}</div>
       </div>`;
-    });
-    if (inJul) html += `<div class="cal-add-slot" onclick="openModalDay(${d.getDate()})">+</div>`;
-    html += `</div></div>`;
+      // Posts column
+      html += `<div style="flex:1;display:flex;flex-direction:column;gap:6px">`;
+      if (evt) html += `<div class="cal-event ev-event" style="font-size:10px">${evt}</div>`;
+      if (dp.length) {
+        dp.forEach(post => {
+          const idx = posts.indexOf(post);
+          const pl = PILLAR[post.p];
+          const statusDot = post.status === 'pub' ? '#22C55E' : post.status === 'prod' ? '#F59E0B' : post.status === 'rev' ? '#3B82F6' : 'var(--t3)';
+          html += `<div class="cal-event ${pl.cls}" onclick="cycleStatus(${idx})" style="display:flex;align-items:center;gap:8px;font-size:11px;padding:9px 10px">
+            <span style="width:7px;height:7px;border-radius:50%;background:${statusDot};flex-shrink:0"></span>
+            <span style="flex:1">${post.title}</span>
+            <span style="font-size:9px;opacity:.65;white-space:nowrap">${post.fmt}</span>
+          </div>`;
+        });
+      } else if (inJul) {
+        html += `<div class="cal-add-slot" onclick="openModalDay(${d.getDate()})" style="width:100%;text-align:center;font-size:12px;padding:8px">+ Agregar post</div>`;
+      }
+      if (dp.length && inJul) html += `<div class="cal-add-slot" onclick="openModalDay(${d.getDate()})" style="text-align:center;font-size:11px">+</div>`;
+      html += `</div></div>`;
+    }
+    document.getElementById('cal-grid').innerHTML = html;
+  } else {
+    // ── GRID VIEW (desktop) ──
+    let html = '';
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(ws); d.setDate(d.getDate() + i);
+      const key = dateKey(d);
+      const inJul = d.getMonth() === 6;
+      const isToday = d.toDateString() === today.toDateString();
+      const dp = posts.filter(p => p.d === key && (!activeFilter || p.p === activeFilter));
+      const evt = EVENTS[key];
+
+      html += `<div class="cal-col${isToday ? ' today' : ''}${!inJul ? ' outside' : ''}">`;
+      html += `<div class="cal-day-hd${isToday ? ' today-hd' : ''}">
+        ${DAYS_SHORT[i]}
+        <span class="day-num">${d.getDate()}</span>
+      </div>`;
+      html += `<div class="cal-events">`;
+      if (evt) html += `<div class="cal-event ev-event">${evt}</div>`;
+      dp.forEach(post => {
+        const idx = posts.indexOf(post);
+        const pl = PILLAR[post.p];
+        html += `<div class="cal-event ${pl.cls}" onclick="cycleStatus(${idx})" title="${post.fmt} · ${pl.label}">
+          ${post.title}
+          <span class="ev-label">${post.fmt} · ${pl.label}</span>
+        </div>`;
+      });
+      if (inJul) html += `<div class="cal-add-slot" onclick="openModalDay(${d.getDate()})">+</div>`;
+      html += `</div></div>`;
+    }
+    document.getElementById('cal-grid').innerHTML = html;
   }
-  document.getElementById('cal-grid').innerHTML = html;
   updatePostsKPI();
 }
 
@@ -923,6 +973,7 @@ renderCal();
 renderOvTracker();
 setOvWeekLabel();
 updatePostsKPI();
+window.addEventListener('resize', () => { if (document.getElementById('cal-grid')) renderCal(); });
 </script>
 </body>
 </html>
